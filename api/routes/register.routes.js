@@ -4,7 +4,7 @@ var unique_scores=[];
 var year = ""
 var id_to_group = {};///for matching id to group function.
 var stopper = true; //stop he ping-pong between time_allocation and write_to_database function
-
+var dorm_rooms = {MoPratt:[101,102,103,104],Val:[302,303,304,305]};
 
 
 module.exports = function(app, config) {
@@ -348,6 +348,12 @@ var match_id_to_name = function(){
 
 
 ///////////MO routes start------------------------------
+  app.route('/:2015/getRooms').get(function(req,res){
+    console.log("Trying to get rooms,backend");
+    res.json(dorm_rooms);
+  });
+
+
   app.route('/:year/addTeam').post(function(req, res){
     //console.log(req.body);
     year= req.params.year;

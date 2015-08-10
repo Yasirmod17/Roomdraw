@@ -23,6 +23,22 @@ angular.module('RoomDraw.services')
           });
         },
 
+        getRooms: function(url, callback){
+          $http.get(url)
+          .success(function(data){
+            if(data.error) {
+              Materialize.toast('ERROR: Couldnt get rooms' , 5000, 'red darken-3');
+              return data.error;
+            }
+            console.log(data);
+            callback(data)
+          })
+          .error(function(err){
+            Materialize.toast('ERROR: Couldnt try to get rooms' , 5000, 'red darken-3');
+            return err;
+          });
+        },
+
         createTeam: function(url, object, callback) {
           $http.post(url, object)
           .success(function(data) {

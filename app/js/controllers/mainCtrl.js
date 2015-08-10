@@ -13,7 +13,8 @@ angular.module('RoomDraw.controllers')
 		};
 
 		$scope.init = function() {
-			console.log($rootScope.currentUser.uid)
+			$scope.getRooms();
+			console.log($rootScope.currentUser.uid);
 			var year= DrawYear.year()  
 			var get_teams =getTeams.getTeams();
 			get_teams.$loaded().then(function(data) {
@@ -34,12 +35,17 @@ angular.module('RoomDraw.controllers')
 					var time =group.time;
 					//console.log($rootScope.time.getHours())
 					console.log(time);
-					if($rootScope.time.getHours()>=parseInt(time[0]+time[1])){
+					if($rootScope.time.getHours()==parseInt(time[0]+time[1])){
 						if($rootScope.time.getMinutes()>=parseInt(time[3]+time[4])){
 							console.log("its timeeeee")
 							group.show=true;
 						}
+
 					}
+					if($rootScope.time.getHours()>parseInt(time[0]+time[1])){
+							console.log("its timeeeee")
+							group.show=true;
+						}
 
 				})
 			})
@@ -50,10 +56,27 @@ angular.module('RoomDraw.controllers')
 			// competitions.$loaded().then(function(data) {
 			// $scope.competition = data;
 		}
+		$scope.roomPick={roomId:"",dormId:""};
+
+		$scope.changeRooms = function(){
+			console.log($scope.roomPick.dormId);
+			//console.log(picked);
+			$scope.dorm = $scope.roomPick.dormId;
+			console.log("picked", $scope.roomPick.dormId);
+			$scope.rooms = $rootScope.dormRooms[$scope.roomPick.dormId]
+			console.log($scope.rooms);
+		}
+
+		$scope.init2 = function(data){
+			$rootScope.dormRooms = data;
+			$rootScope.dorms = Object.keys($rootScope.dormRooms)
+			console.log($rootScope.dorms);
+			console.log($rootScope.dormRooms)
+		}
 
 
 
-		$scope.roomPick={dorm:""};
+		
 		$scope.time = function(){
 			var time = new Date();
 			$rootScope.time = time;
@@ -91,6 +114,10 @@ angular.module('RoomDraw.controllers')
 			console.log($scope.EvaluatedTeam);
 			$scope.addTeam()
 		}
+		$scope.getRooms = function(){
+			var url = '2015/getRooms';
+			Requests.getRooms(url , $scope.init2);
+		}
 
 		$scope.addTeam = function() {
 			var url = '/2015/addTeam';
@@ -102,26 +129,26 @@ angular.module('RoomDraw.controllers')
 			$scope.display_roomPick();
 		}
 
-		$scope.display_roomPick = function(){
-			var shuffled = getTeams.get_shuffled();
-			shuffled.$loaded().then(function(data) {
-			 $rootScope.shuffled = data; 
-			})
-			_.forEach($rootScope.shuffled,function(luv){
-				_.forEach(luv,function(group){
-					var time =group.time;
-					console.log(time)
-					if($rootScope.time.getHours()>=parseInt(time[0]+time[1])){
-						if($rootScope.time.getMinutes()>=parseInt(time[3]+time[4])){
-							console.log("its timeeeee")
-							group.show=true;
-						}
-					}
+		// $scope.display_roomPick = function(){
+		// 	var shuffled = getTeams.get_shuffled();
+		// 	shuffled.$loaded().then(function(data) {
+		// 	 $rootScope.shuffled = data; 
+		// 	})
+		// 	_.forEach($rootScope.shuffled,function(luv){
+		// 		_.forEach(luv,function(group){
+		// 			var time =group.time;
+		// 			console.log(time)
+		// 			if($rootScope.time.getHours()>=parseInt(time[0]+time[1])){
+		// 				if($rootScope.time.getMinutes()>=parseInt(time[3]+time[4])){
+		// 					console.log("its timeeeee")
+		// 					group.show=true;
+		// 				}
+		// 			}
 
-				})
-			})
-			$scope.time_keeper();
-		}
+		// 		})
+		// 	})
+		// 	$scope.time_keeper();
+		// }
 		// $scope.createTeam = function() {
 		// 	var url = '/competitions/Bot Olympics/register';
 		// 	$scope.team.team_id = $rootScope.currentUser.uid;
