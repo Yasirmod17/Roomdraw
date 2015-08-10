@@ -1,0 +1,36 @@
+.sidenav
+    .logo
+       img.responsive-img(src='img/AmherstIcon.jpg') 
+       //iframe(src='http://free.timeanddate.com/clock/i4sh6rsp/n125/fn6/fs16/fc9ff/tc000/ftb/bas2/bat1/bacfff/pa8/tt0/tw1/th1/ta1/tb4', frameborder='0', width='217', height='60')
+    //.expander.hide-on-med-and-up
+        a(href='#')
+            i.mdi-navigation-menu.small
+    //ul.side-menu(ng-init='selected = 1')
+        li(ng-class='{active: selected === 1, inactive: !selected}' ng-init='hide=false' ng-if='hide')
+            a.comp-details(href='#' ng-click='selected = 1')
+                i.mdi-navigation-apps.small
+        li(ng-class='{active: selected === 2, inactive: !selected}')
+            a.teams-link.tooltipped(href='#' ng-click='selected = 2' data-tooltip="All Teams" data-position="right")
+                i.mdi-social-people.small
+.top-nav.row
+    .nav-container
+        .app-name.col.s11.m3.l3.valign-wrapper
+            h3.uppercase.valign.center-align 
+              a(href='/' style='color:white;font-size:30px') Room Draw
+        //iframe(src='http://free.timeanddate.com/clock/i4sh6rsp/n125/fn6/fs16/fc9ff/tc000/ftb/bas2/bat1/bacfff/pa8/tt0/tw1/th1/ta1/tb4', frameborder='0', width='217', height='80')
+        .welcome.hide-on-small-only
+            a.profile-details(ng-if='currentUser')
+                img(ng-src='{{currentUser.picture}}')
+                span 
+                    {{currentUser.name}}
+                    //a(href='/dashboard') Dashboard
+
+            a.btn-login(href='/getStarted' )
+                span Get Started
+            a.btn-login(ng-if='!currentUser' ng-click='login()')
+                span Login
+            a.btn-login(ng-if='currentUser' ng-click='logout()')
+                span Logout
+//video#bgvid.hide-on-med-and-down(autoplay='', loop='', poster='')
+    source(src='media/hackdown.webm', type='video/webm')
+    source(src='media/hackdown.mp4', type='video/mp4')

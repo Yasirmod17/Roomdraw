@@ -1,0 +1,44 @@
+#create-team-modal.modal.modal-fixed-footer
+  .modal-content
+    .container
+      h1.create-team Create A Team
+      .team-form
+        
+        .row
+          .input-field.col.s12.m6.l6center
+            i.mdi-action-account-circle.prefix
+            input#icon_prefix.validate(type='text' length="150" ng-model='team_detail.name')
+            label(for='icon_prefix') Team Name
+        div
+          p
+            |MEMBERS
+        fieldset(ng-repeat="member in members")
+          .row
+            .input-field.col.s12.m10.l10
+              i.mdi-editor-mode-edit.prefix
+              input#icon_prefix2(ng-model='member.name', placeholder="Member Name")
+              div
+              select.browser-default(ng-model='member.classyear')
+                option(value="",disabled="",selected="") Member Classyear
+                option(value='2016') 2016
+                option(value='2016E') 2016E
+                option(value='2017') 2017
+                option(value='2017E') 2017E
+                option(value='2018') 2018
+                option(value='2018E') 2018E
+
+              //input#icon_prefix2(ng-model='member.classyear', placeholder="Clasyear(2017 or 2017E)")
+              //label(for='icon_prefix2') Member Detail.
+        //.row
+          .input-field.col.s12.m10.l10
+            i.mdi-editor-mode-edit.prefix
+            input#icon_prefix2.materialize-textarea(ng-model='member.name')
+            input#icon_prefix2.materialize-textarea(ng-model='member.classyear')
+            label(for='icon_prefix2') Member Detail.
+        
+        button(ng-click="addNewMember()") Add Member
+        button(ng-click="removeMember()") Remove Member
+  .modal-footer
+    {{members}}
+    a.modal-action.modal-close.waves-effect.waves-green.btn(href='#' ng-click='evaluateTeam()') Create
+    

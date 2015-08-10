@@ -1,0 +1,104 @@
+include ../shared/layout
+.overlay
+    .content.teams.row
+        h1 UNORDERED LIST
+        a.btn-floating.btn-large.waves-effect.waves-light.purple.modal-trigger.btn.tooltipped(href='#create-team-modal' data-tooltip="Create a Group" data-position="right" data-delay="50")
+            i.mdi-content-add
+        .row
+          div(ng-repeat="group in teams.groups")
+            .col.s12
+              .team.col.s6.m4.l3
+                .card.team-card.trans
+                  .team-list
+                    ul.team-member
+                      li.collection-item.avatar.row(ng-repeat='member in group.members')
+                        .user-profile.col.s10
+                          //img.circle(ng-src='{{member.picture}}')
+                          span.title {{member.name}}
+                        //.actions.col.s2(ng-if='(currentUser.uid === team_id) && !member.accepted')
+                          a.green-text.text-accent-2(href='#' ng-click="acceptMember(member_id)")
+                            i.mdi-action-done.accept
+                          a.red-text.text-accent-2(href='#' ng-click="declineMember(member_id)")
+                            i.mdi-action-highlight-remove.decline
+                  .card-content
+                    span.card-title.activator.grey-text.text-darken-4
+                      | {{group.name}}
+                      i.mdi-navigation-more-vert.right
+                  .card-reveal
+                    span.card-title.grey-text.text-darken-4
+                      | {{group.name}}
+                      i.mdi-navigation-close.right
+                    hr
+                    span.div-text
+                      | luv score: {{group.score}}
+                    hr 
+                    div.div-text.div-textSize(ng-repeat="member in group.members")
+                      | {{member.name}}, {{member.classyear}}
+                      
+                   // .card-action.right-align(ng-if='currentUser')
+                      a.waves-effect.waves-light.waves-ripple(href='#' ng-click='joinTeam(team_id)' ng-hide='currentUser.uid === team_id')
+                        i.mdi-social-person-add.small
+                      a.waves-effect.waves-light.waves-ripple(href='#' ng-click='registerTeam(team_id)' ng-if='currentUser.uid === team_id')
+                        i.mdi-content-send.small
+       
+
+    .content.teams.row
+        h1 ORDERED LIST
+        .row
+          div(ng-repeat='luv in shuffled track by $index')
+            .col.s12
+              .team.col.s6.m4.l3(ng-repeat="value in luv| orderBy:' value.score'")
+                .card.team-card.trans
+                  .team-list
+                    ul.team-member
+                      li.collection-item.avatar.row(ng-repeat='person in value.members')
+                        .user-profile.col.s10
+                          //img.circle(ng-src='{{member.picture}}')
+                          span.title {{person.name}}
+                        //.actions.col.s2(ng-if='(currentUser.uid === team_id) && !member.accepted')
+                          a.green-text.text-accent-2(href='#' ng-click="acceptMember(member_id)")
+                            i.mdi-action-done.accept
+                          a.red-text.text-accent-2(href='#' ng-click="declineMember(member_id)")
+                            i.mdi-action-highlight-remove.decline
+                  .card-content
+                    span.card-title.activator.grey-text.text-darken-4
+                      | {{value.name}}
+                      i.mdi-navigation-more-vert.right
+                  .card-reveal
+                    span.card-title.grey-text.text-darken-4
+                      | {{value.name}}
+                      i.mdi-navigation-close.right
+                    hr
+                    span.div-text
+                      | luv score: {{value.score}}
+                    hr 
+                    div.div-text.div-textSize(ng-repeat="person in value.members")
+                      | {{person.name}}, {{person.classyear}}
+                      div(ng-if='value.show && (currentUser.uid === value.id)')
+                        select.browser-default(ng-model='roomPick.dorm')
+                          option(value="",disabled="",selected="") Dorm
+                          option(value='MoPratt') MoPratt 
+                    {{roomPick}}
+                   // .card-action.right-align(ng-if='currentUser')
+                      a.waves-effect.waves-light.waves-ripple(href='#' ng-click='joinTeam(team_id)' ng-hide='currentUser.uid === team_id')
+                        i.mdi-social-person-add.small
+                      a.waves-effect.waves-light.waves-ripple(href='#' ng-click='registerTeam(team_id)' ng-if='currentUser.uid === team_id')
+                        i.mdi-content-send.small
+        a.btn-floating.btn-large.waves-effect.waves-light.purple.modal-trigger.btn.tooltipped(href='#create-team-modal' data-tooltip="Create a Group" data-position="right" data-delay="50")
+            i.mdi-content-add
+include modals/create-team
+
+
+script(type='text/javascript').
+  $(function() {
+    $('.modal-trigger').leanModal();
+    $('.teams-link').on('click', function() {
+      $('.overlay').scrollTo('.content.teams', 800);
+    });
+    $('.comp-details').on('click', function() {
+      $('.overlay').scrollTo('.content.comp', 800);
+    });
+    $('.tooltipped').tooltip({"delay": 50});
+  });
+
+   // script(type='materialize/js/materialize.js').

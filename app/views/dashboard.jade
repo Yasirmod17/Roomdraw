@@ -1,0 +1,39 @@
+include ../shared/layout
+.overlay
+  .container(style='height:550px;width:800px;padding-top:100px')
+      .row
+        // Large
+        .col.s6
+          .card.blue-grey.darken-1(style='height:410px;width:395px')
+            .card-content.white-text
+              span.card-title USER Profile
+              p
+                | {{userName}}
+              div
+                img(src='{{userphoto}}', alt='{{userName}}',style='height:300px;width:270px')
+        .col.s6     
+          .card.blue-grey.darken-1(style='height:410px;width:395px')
+              .card-content.white-text
+                span.card-title Badges
+                hr
+                div(ng-repeat='award in awardHeader')
+                  {{award}}: <br> 
+                  div(ng-repeat='medal in pair[award]')
+                    {{medal.name}}:
+                    img(ng-src='../../img/{{medal.name+ "_medal"}}.jpg',ng-alt='{{medal.color}}',
+                      style='height:50px;width:30px')
+                  hr
+                  
+        // two adjacent
+                  }
+      .col.s12
+          div
+            .card.blue-grey.darken-1(style='height:200px;width:800px')
+              .card-content.white-text
+                span.card-title Teams you've been a part of
+                div(ng-repeat='team in userTeams')
+                  | {{team.Competition_name}} : {{team.team_name}}
+
+
+                  
+         
