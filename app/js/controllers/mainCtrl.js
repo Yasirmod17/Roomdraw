@@ -51,17 +51,21 @@ angular.module('RoomDraw.controllers')
 									//console.log($rootScope.room_info);
 									//console.log(member.name);
 								})
-								}
+								$rootScope.room_info['group_name'] = group.name;
+								$rootScope.room_info['group_score'] = group.score;
+							}
 						}
 						if($rootScope.time.getHours()>parseInt(time[0]+time[1])){
-								console.log("its timeeeee")
-								group.show=true;
-								_.forEach(group.members,function(member){
-									$rootScope.room_info[member.name] ={dorm:"",room:""};
-									$rootScope.members_in_team.push(member.name);
-									//console.log($rootScope.room_info)
-									//console.log(member.name);
-								})
+							console.log("its timeeeee")
+							group.show=true;
+							_.forEach(group.members,function(member){
+								$rootScope.room_info[member.name] ={dorm:"",room:""};
+								$rootScope.members_in_team.push(member.name);
+								//console.log($rootScope.room_info)
+								//console.log(member.name);
+							})
+							$rootScope.room_info['group_name'] = group.name;
+							$rootScope.room_info['group_score'] = group.score;
 						}
 					}
 					console.log($rootScope.room_info);

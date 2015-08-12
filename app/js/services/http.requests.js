@@ -58,6 +58,23 @@ angular.module('RoomDraw.services')
           });
         },
 
+        saveRoomChoices: function(url,object,callback){
+          $http.post(url,object)
+          .success(function(data){
+            if(data.error) {
+              Materialize.toast('ERROR: ' + data.error, 5000, 'red darken-3');
+              return data.error;
+            }
+            console.log(data);
+            callback();
+            Materialize.toast('Your rooms choices have been saved!', 5000, 'teal accent-4');
+          })
+          .error(function(err) {
+            Materialize.toast('ERROR: Room choices cant be saved\nPlease, try again later.', 5000, 'red darken-3');
+            return err;
+          })
+        },
+
         createTeam: function(url, object, callback) {
           $http.post(url, object)
           .success(function(data) {

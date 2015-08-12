@@ -6,7 +6,6 @@ angular.module('RoomDraw.services', []);
 /* loading services */
 require('./services/auth.js');
 require('./services/refs.js');
-require('./services/competitions.js');
 require('./services/user.js');
 require('./services/http.requests.js');
 require('./services/http.requests.js');
@@ -61,7 +60,7 @@ RoomDraw.run(['$rootScope', 'Authentication', 'Refs',
           picture: authData.google.cachedUserProfile.picture
         };
   			$rootScope.currentUser = user;
-  			console.log($rootScope.currentUser);
+  			//console.log($rootScope.currentUser);
   			return $rootScope.currentUser;
   		}
       else {
@@ -84,7 +83,7 @@ $(function() {
 	});
 });
 
-},{"./controllers/VerificationCntrl.js":2,"./controllers/mainCtrl.js":3,"./services/auth.js":4,"./services/competitions.js":5,"./services/dashboardServices.js":6,"./services/drawyear.js":7,"./services/http.requests.js":8,"./services/refs.js":9,"./services/teamservice.js":10,"./services/user.js":11,"./services/verification.js":12}],2:[function(require,module,exports){
+},{"./controllers/VerificationCntrl.js":2,"./controllers/mainCtrl.js":3,"./services/auth.js":4,"./services/dashboardServices.js":5,"./services/drawyear.js":6,"./services/http.requests.js":7,"./services/refs.js":8,"./services/teamservice.js":9,"./services/user.js":10,"./services/verification.js":11}],2:[function(require,module,exports){
 angular.module('RoomDraw.controllers')
 .controller('VerificationCntrl', ['Authentication', 'DrawYear','getTeams','$scope', '$rootScope', '$location', '$timeout', '$http', 'UserDetails', 'Requests','Verification',
 	function(Authentication, DrawYear,getTeams, $scope, $rootScope, $location, $timeout, $http, UserDetails, Requests,Verification) {
@@ -92,6 +91,16 @@ angular.module('RoomDraw.controllers')
 		console.log(temp);
 		$rootScope.room_info = temp[1]; /////BINDING MODEL FOR EACH PERSON IN THE GROUP
 		$rootScope.members_in_team =temp[0];
+
+		$scope.init = function(){
+			$location.path('/');
+		}
+
+		$scope.saveRoomChoices = function(){
+			var url = '/2015/saveRoomChoices';
+			//$scope.EvaluatedTeam.team_id = $rootScope.currentUser.uid;
+			Requests.saveRoomChoices(url, $rootScope.room_info,$scope.init)// $scope.init);
+		}
 	}])
 //This controller uses a service(verification service) as a temporary placeholder for data when switching from maincntrl to this.
 },{}],3:[function(require,module,exports){
@@ -148,17 +157,21 @@ angular.module('RoomDraw.controllers')
 									//console.log($rootScope.room_info);
 									//console.log(member.name);
 								})
-								}
+								$rootScope.room_info['group_name'] = group.name;
+								$rootScope.room_info['group_score'] = group.score;
+							}
 						}
 						if($rootScope.time.getHours()>parseInt(time[0]+time[1])){
-								console.log("its timeeeee")
-								group.show=true;
-								_.forEach(group.members,function(member){
-									$rootScope.room_info[member.name] ={dorm:"",room:""};
-									$rootScope.members_in_team.push(member.name);
-									//console.log($rootScope.room_info)
-									//console.log(member.name);
-								})
+							console.log("its timeeeee")
+							group.show=true;
+							_.forEach(group.members,function(member){
+								$rootScope.room_info[member.name] ={dorm:"",room:""};
+								$rootScope.members_in_team.push(member.name);
+								//console.log($rootScope.room_info)
+								//console.log(member.name);
+							})
+							$rootScope.room_info['group_name'] = group.name;
+							$rootScope.room_info['group_score'] = group.score;
 						}
 					}
 					console.log($rootScope.room_info);
@@ -316,7 +329,7 @@ angular.module('RoomDraw.controllers')
 	}
 ]);
 
-},{"lodash":13}],4:[function(require,module,exports){
+},{"lodash":12}],4:[function(require,module,exports){
 angular.module('RoomDraw.services')
   .factory('Authentication', ['$timeout', '$cookies', '$http', '$rootScope', 'Refs', '$location',
     function($timeout, $cookies, $http, $rootScope, Refs,$location) {
@@ -409,22 +422,6 @@ angular.module('RoomDraw.services')
 
 },{}],5:[function(require,module,exports){
 angular.module('RoomDraw.services')
-  .factory('Competitions', ['$cookies', '$firebaseObject', 'Refs',
-    function($cookies, $firebaseObject, Refs) {  
-      
-      var botOlympics = function() {
-        var competition = $firebaseObject(Refs.bot_olympics);
-        return competition;
-      };
-
-      return {
-        botOlympics: botOlympics
-      };
-    }
-  ]);
-
-},{}],6:[function(require,module,exports){
-angular.module('RoomDraw.services')
   .factory('getWinners', ['$cookies', '$firebaseObject', 'Refs', 'Authentication',"$rootScope",
   function($cookies, $firebaseObject, Refs, Authentication,$rootScope) { 
 
@@ -444,7 +441,7 @@ angular.module('RoomDraw.services')
   ]);
 
 
-},{"lodash":13}],7:[function(require,module,exports){
+},{"lodash":12}],6:[function(require,module,exports){
 angular.module('RoomDraw.services')
   .factory('DrawYear', ['$cookies', '$firebaseObject', 'Refs',
     function($cookies, $firebaseObject, Refs) {  
@@ -460,7 +457,7 @@ angular.module('RoomDraw.services')
     }
   ]);
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 angular.module('RoomDraw.services')
   .factory('Requests', ['$cookies', '$http',
     function($cookies, $http) {
@@ -519,6 +516,23 @@ angular.module('RoomDraw.services')
             Materialize.toast('ERROR: Couldnt try to get rooms' , 5000, 'red darken-3');
             return err;
           });
+        },
+
+        saveRoomChoices: function(url,object,callback){
+          $http.post(url,object)
+          .success(function(data){
+            if(data.error) {
+              Materialize.toast('ERROR: ' + data.error, 5000, 'red darken-3');
+              return data.error;
+            }
+            console.log(data);
+            callback();
+            Materialize.toast('Your rooms choices have been saved!', 5000, 'teal accent-4');
+          })
+          .error(function(err) {
+            Materialize.toast('ERROR: Room choices cant be saved\nPlease, try again later.', 5000, 'red darken-3');
+            return err;
+          })
         },
 
         createTeam: function(url, object, callback) {
@@ -610,7 +624,7 @@ angular.module('RoomDraw.services')
     }
   ]);
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 angular.module('RoomDraw.services')
   .factory('Refs', ['$cookies', '$firebase',
     function($cookies, $firebase) {
@@ -628,7 +642,7 @@ angular.module('RoomDraw.services')
     }
   ]);
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 angular.module('RoomDraw.services')
   .factory('getTeams', ['$cookies', '$firebaseObject', 'Refs',
     function($cookies, $firebaseObject, Refs) {  
@@ -657,7 +671,7 @@ angular.module('RoomDraw.services')
       };
     }
   ]);
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 angular.module('RoomDraw.services')
   .factory('UserDetails', ['$cookies', '$firebaseObject', 'Refs',
     function($cookies, $firebaseObject, Refs) {  
@@ -673,7 +687,7 @@ angular.module('RoomDraw.services')
     }
   ]);
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 angular.module('RoomDraw.services')
   .factory('Verification', ['$cookies', '$firebaseObject', 'Refs', '$rootScope',
     function($cookies, $firebaseObject, Refs,$rootScope) {  
@@ -696,7 +710,7 @@ angular.module('RoomDraw.services')
       };
     }
   ]);
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 (function (global){
 /**
  * @license

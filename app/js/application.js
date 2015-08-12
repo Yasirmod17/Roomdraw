@@ -5,7 +5,6 @@ angular.module('RoomDraw.services', []);
 /* loading services */
 require('./services/auth.js');
 require('./services/refs.js');
-require('./services/competitions.js');
 require('./services/user.js');
 require('./services/http.requests.js');
 require('./services/http.requests.js');
@@ -60,7 +59,7 @@ RoomDraw.run(['$rootScope', 'Authentication', 'Refs',
           picture: authData.google.cachedUserProfile.picture
         };
   			$rootScope.currentUser = user;
-  			console.log($rootScope.currentUser);
+  			//console.log($rootScope.currentUser);
   			return $rootScope.currentUser;
   		}
       else {

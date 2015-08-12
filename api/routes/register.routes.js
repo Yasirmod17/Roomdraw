@@ -259,6 +259,20 @@ var time_allcoation = function(){
     write_to_database(new_groups,unique_scores); //re-weite to shuffled -luv database child
   })
 }
+var disable_group_permission = function(group_name,group_score){
+  var b = Math.round(group_score * 100) / 100
+  var b=b.toString()
+  b = b.replace('.','_')
+  console.log(b)
+  console.log(group_name);
+  iterations.child(year).child('shuffled_luv').child(b).child(group_name).update({
+      time:'30:00'
+    }, function(error) {
+    if(!error){
+      console.log("Succesfully removed group permission");
+    }
+    })
+}
 //UNTESTED FUNCTIONS/////
 var match_id_to_name = function(){
   iterations.child(year).child('groups').once('value',function(snap){
@@ -273,7 +287,7 @@ var match_id_to_name = function(){
 })
 }
 
-///////////MO functions END
+////////////////////////////////////////////////////MO functions END
 
  
 
@@ -436,11 +450,6 @@ var match_id_to_name = function(){
             
             //console.log(all_members);
             _.forEach(all_members,function(i){
-              //console.log(i);
-              //var key=Object.keys(i)[0]
-              //console.log(key);
-              //console.log(i[key]);
-              //console.log(i.members);
               _.forEach(question,function(j){
                 //console.log(j.name);
                 _.forEach(i.members, function(k){
@@ -490,6 +499,79 @@ var match_id_to_name = function(){
       }
     });
   })
+
+  app.route('/:year/saveRoomChoices').post(function(req,res){
+    year = req.params.year;
+    iterations.child(req.params.year).child('Dormitories').once('value', function(snap) {
+      var removed_rooms={};
+      var dorms = snap.val();
+      var room_info = req.body;
+      console.log(req.body);
+      var group_name = room_info.group_name;
+      var group_score = room_info.group_score;
+      delete room_info.group_name;
+      delete room_info.group_score;
+      console.log(room_info);
+      console.log(group_name)
+      console.log(group_score)
+      var people_names =  Object.keys(room_info);
+      console.log(people_names);
+      _.forEach(people_names,function(person_name){
+        var person_detail = room_info[person_name];
+        var dorm_choice = person_detail.dorm;
+        console.log(dorm_choice);
+        removed_rooms[dorm_choice]=[];
+        console.log(person_detail.room);
+        iterations.child(req.params.year).child('Picked').child(person_name).set({
+          detail:person_detail
+        },function(error){
+          if(!error){
+            console.log("ROOM CHOICE SAVED",person_name);
+            //console.log(dorms.dorm_choice);
+            console.log(dorms[dorm_choice].available_rooms);
+            var initial_rooms_available = dorms[dorm_choice].available_rooms;
+            console.log(initial_rooms_available);
+            var  new_rooms_available = [];
+            _.forEach(initial_rooms_available,function(room){
+              if (room != person_detail.room){
+                if(_.include(removed_rooms[person_detail.dorm],room)){
+                  console.log('previously removed',room)
+                }
+                else{
+                new_rooms_available.push(room);
+                }
+              }
+              else{
+
+                removed_rooms[person_detail.dorm].push(person_detail.room);
+              }
+            })
+            console.log(new_rooms_available)
+            console.log(removed_rooms);
+            iterations.child(req.params.year).child('Dormitories').child(dorm_choice).set({
+              available_rooms:new_rooms_available
+            },function(error) {
+                if(!error){
+                  //res.send('ROOM CHOICES SAVED. CONGRATULATIONS!')
+                  console.log("Available rooms Updated",person_name);   
+                }
+                else {
+                  res.json({
+                    error: 'Rooms not successfully Updated'
+                  });
+                }
+              })
+          }
+          else{
+            res.json({error: 'Room choice not saved'})
+          } 
+        })  
+      })
+    disable_group_permission(group_name,group_score);
+    res.send("Room choices saved");
+    })
+  })
+  
 
 //////////MO routes end------------------------------
 
