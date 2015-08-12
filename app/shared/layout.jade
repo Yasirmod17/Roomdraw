@@ -1,6 +1,13 @@
 .sidenav
     .logo
        img.responsive-img(src='img/AmherstIcon.jpg') 
+    ul.side-menu
+        li
+            a.btn-login(ng-click='writeRooms()' )
+                   span WriteRooms
+        li
+            a.btn-login(ng-click='getRooms()' )
+                        span GetRooms
        //iframe(src='http://free.timeanddate.com/clock/i4sh6rsp/n125/fn6/fs16/fc9ff/tc000/ftb/bas2/bat1/bacfff/pa8/tt0/tw1/th1/ta1/tb4', frameborder='0', width='217', height='60')
     //.expander.hide-on-med-and-up
         a(href='#')
@@ -16,7 +23,7 @@
     .nav-container
         .app-name.col.s11.m3.l3.valign-wrapper
             h3.uppercase.valign.center-align 
-              a(href='/' style='color:white;font-size:30px') Room Draw
+              a(href='/' style='color:white;font-size:38px') Room Draw
         //iframe(src='http://free.timeanddate.com/clock/i4sh6rsp/n125/fn6/fs16/fc9ff/tc000/ftb/bas2/bat1/bacfff/pa8/tt0/tw1/th1/ta1/tb4', frameborder='0', width='217', height='80')
         .welcome.hide-on-small-only
             a.profile-details(ng-if='currentUser')

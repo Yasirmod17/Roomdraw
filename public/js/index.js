@@ -13,10 +13,12 @@ require('./services/http.requests.js');
 require('./services/dashboardServices.js');
 require('./services/drawyear.js');
 require('./services/teamservice.js');
+require('./services/verification.js');
+
 
 // loading controller
 require('./controllers/mainCtrl.js');
-require('./controllers/dashboardCntrl.js')
+require('./controllers/VerificationCntrl.js')
 
 window.RoomDraw = angular.module('RoomDraw', [
 	'ngRoute',
@@ -37,6 +39,10 @@ RoomDraw.config(['$routeProvider','$locationProvider',
 			.when('/getStarted', {
 				templateUrl: 'views/home.html',
 				controller: 'mainCtrl'
+			})
+			.when('/submitRoomChoices', {
+				templateUrl: 'views/roomChoices.html',
+				controller: 'VerificationCntrl'
 			})
 			.otherwise({
 				templateUrl: '404.html'
@@ -78,133 +84,20 @@ $(function() {
 	});
 });
 
-},{"./controllers/dashboardCntrl.js":2,"./controllers/mainCtrl.js":3,"./services/auth.js":4,"./services/competitions.js":5,"./services/dashboardServices.js":6,"./services/drawyear.js":7,"./services/http.requests.js":8,"./services/refs.js":9,"./services/teamservice.js":10,"./services/user.js":11}],2:[function(require,module,exports){
-var app = angular.module('RoomDraw.controllers');
-
-
-app.controller('dashboardCntrl', ['Authentication', '$scope', '$rootScope', '$location', '$timeout', '$http', 'Competitions', 'UserDetails', 'Requests','getWinners',
-	function(Authentication, $scope, $rootScope, $location, $timeout, $http, Competitions, UserDetails, Requests,getWinners) {
-
-		//$scope.userName=$rootScope.currentUser.name;
-		$scope.userName="Godson Ukpere" //for testing purpose
-		$scope.userphoto=$rootScope.currentUser.picture;
-		$scope.init = function() {
-			var competitions = Competitions.botOlympics();
-			competitions.$loaded().then(function(data) {
-			$scope.competition = data;}
-			);
-			$scope.user=$rootScope.currentUser.uid;	
-		}
-		$scope.init2 = function(){
-			$scope.userTeams=[]
-			var all_competitions = getWinners.competitionGetter();
-			all_competitions.$loaded().then(function(data) {
-			$scope.competition = data;
-			//console.log($scope.competition)
-			var _ = require('lodash')
-			//delete unwanted objects always present
-			delete $scope.competition.$id;
-			delete $scope.competition.$$conf;
-			delete $scope.competition.$priority;
-			//////////////////////find teams user is part of
-			 _.forEach($scope.competition,function(i){
-            	var team_list=i.teams;
-            	//console.log(team_list);
-            	var name = i.name;
-            	//console.log(name);
-            	
-            	_.forEach(team_list,function(team){
-            		members=team.members;
-            		//console.log(members);
-            		_.forEach(members,function(member){
-            			if(_.include(member,$scope.userName)){
-            				//console.log("YES, includes");
-            				var name = i.name;
-            				var pair={}
-            				pair['Competition_name']=name;
-            				pair['team_name']=team.name;
-            				$scope.userTeams.push(pair);
-            		}
-            		})
-            		
-            	})
-          });
-			 //console.log($scope.userTeams);
-		})}
-		$scope.init3  = function(){
-			$scope.competitionWon=[]
-			var all_competitions = getWinners.competitionGetter();
-			all_competitions.$loaded().then(function(data) {
-			$scope.competition = data;
-			//console.log($scope.competition)
-			var _ = require('lodash')
-			//delete unwanted objects always present
-			delete $scope.competition.$id;
-			delete $scope.competition.$$conf;
-			delete $scope.competition.$priority;
-			//////////////////////find teams user is part of
-			 	_.forEach($scope.competition,function(i){
-          var team_list=i.teams;
-          //console.log(team_list);
-         	var name = i.name;
-         	//console.log(name);
-					_.forEach(team_list,function(team){
-      		members=team.members;
-      		//console.log(members);
-	      		_.forEach(members,function(member){
-	      			if(_.include(member,$scope.userName)){
-								if(team.winner != null){
-									var pair={};
-									pair['competition']=name;
-									pair['won']=team.winner;
-									$scope.competitionWon.push(pair)
-								}
-							}
-						})
-					})
-				})
-				//console.log($scope.competitionWon)
-				$scope.init4();
-			})
-		}
-		$scope.init4 = function(){
-			//$scope.finishedAwards=[]
-			var key={Overall:'Gold', Staff_favorite:'Silver', Most_useful:'Bronze',Best_ux:'Blue',
-			Most_innovative:'green'};
-			var _ = require('lodash');
-			_.forEach($scope.competitionWon, function(i){
-				$scope.pair={};
-				$scope.awardHeader=[]
-				$scope.awardHeader.push(i.competition)
-				console.log($scope.awardHeader)
-				var awardType=i.competition;
-				var award=[];
-				_.forEach(i.won,function(j){
-						var Paward={};
-						Paward['name'] =j ;
-						//console.log(j);
-						//console.log(key[j]);
-						//console.log(key.j);
-						Paward['color']= key[j];
-						award.push(Paward);
-						
-				})
-				$scope.pair[awardType]=award;
-				
-				//$scope.finishedAwards.push(pair);
-			})
-			console.log($scope.pair);
-			//console.log($scope.finishedAwards);
-		}
-
-		$scope.init();
-		$scope.init2();
-		$scope.init3();
-	}])
-},{"lodash":12}],3:[function(require,module,exports){
+},{"./controllers/VerificationCntrl.js":2,"./controllers/mainCtrl.js":3,"./services/auth.js":4,"./services/competitions.js":5,"./services/dashboardServices.js":6,"./services/drawyear.js":7,"./services/http.requests.js":8,"./services/refs.js":9,"./services/teamservice.js":10,"./services/user.js":11,"./services/verification.js":12}],2:[function(require,module,exports){
 angular.module('RoomDraw.controllers')
-.controller('mainCtrl', ['Authentication', 'DrawYear','getTeams','$scope', '$rootScope', '$location', '$timeout', '$http', 'UserDetails', 'Requests',
-	function(Authentication, DrawYear,getTeams, $scope, $rootScope, $location, $timeout, $http, UserDetails, Requests) {
+.controller('VerificationCntrl', ['Authentication', 'DrawYear','getTeams','$scope', '$rootScope', '$location', '$timeout', '$http', 'UserDetails', 'Requests','Verification',
+	function(Authentication, DrawYear,getTeams, $scope, $rootScope, $location, $timeout, $http, UserDetails, Requests,Verification) {
+		var temp = Verification.read();
+		console.log(temp);
+		$rootScope.room_info = temp[1]; /////BINDING MODEL FOR EACH PERSON IN THE GROUP
+		$rootScope.members_in_team =temp[0];
+	}])
+//This controller uses a service(verification service) as a temporary placeholder for data when switching from maincntrl to this.
+},{}],3:[function(require,module,exports){
+angular.module('RoomDraw.controllers')
+.controller('mainCtrl', ['Authentication', 'DrawYear','getTeams','$scope', '$rootScope', '$location', '$timeout', '$http', 'UserDetails', 'Requests','Verification',
+	function(Authentication, DrawYear,getTeams, $scope, $rootScope, $location, $timeout, $http, UserDetails, Requests,Verification) {
 
 		$scope.login = function() {
 			Authentication.login();
@@ -216,9 +109,10 @@ angular.module('RoomDraw.controllers')
       		Materialize.toast('You have successfully logged out!', 5000, 'teal accent-4');
 		};
 
+		$rootScope.room_info = {}; /////BINDING MODEL FOR EACH PERSON IN THE GROUP
+		$rootScope.members_in_team =[];////////FOR ROOMCHOICES
 		$scope.init = function() {
-			$scope.getRooms();
-			console.log($rootScope.currentUser.uid);
+			//console.log($rootScope.currentUser.uid);
 			var year= DrawYear.year()  
 			var get_teams =getTeams.getTeams();
 			get_teams.$loaded().then(function(data) {
@@ -229,53 +123,83 @@ angular.module('RoomDraw.controllers')
 			var shuffled = getTeams.get_shuffled();
 			shuffled.$loaded().then(function(data) {
 			 $rootScope.shuffled = data; 
-			 console.log(data);
+			 //console.log(data);
 			 delete $rootScope.shuffled.$id;
 			 delete $rootScope.shuffled.$$conf;
 			 delete $rootScope.shuffled.$priority;
 			 _.forEach($rootScope.shuffled,function(luv){
-				console.log(luv)
+				//console.log(luv)
 				_.forEach(luv,function(group){
 					var time =group.time;
 					//console.log($rootScope.time.getHours())
 					console.log(time);
-					if($rootScope.time.getHours()==parseInt(time[0]+time[1])){
-						if($rootScope.time.getMinutes()>=parseInt(time[3]+time[4])){
-							console.log("its timeeeee")
-							group.show=true;
+					var binder_length= group.members.length;
+					
+					if(group.id == $rootScope.currentUser.uid){
+						console.log("USER CREATED TEAM", group.name);
+						if($rootScope.time.getHours()==parseInt(time[0]+time[1])){
+							if($rootScope.time.getMinutes()>=parseInt(time[3]+time[4])){
+								console.log("its timeeeee")
+								$rootScope.team_name = group.name
+								group.show=true;							
+								_.forEach(group.members,function(member){
+									$rootScope.room_info[member.name] ={dorm:"",room:""};
+									$rootScope.members_in_team.push(member.name);
+									//console.log($rootScope.room_info);
+									//console.log(member.name);
+								})
+								}
 						}
-
+						if($rootScope.time.getHours()>parseInt(time[0]+time[1])){
+								console.log("its timeeeee")
+								group.show=true;
+								_.forEach(group.members,function(member){
+									$rootScope.room_info[member.name] ={dorm:"",room:""};
+									$rootScope.members_in_team.push(member.name);
+									//console.log($rootScope.room_info)
+									//console.log(member.name);
+								})
+						}
 					}
-					if($rootScope.time.getHours()>parseInt(time[0]+time[1])){
-							console.log("its timeeeee")
-							group.show=true;
-						}
-
+					console.log($rootScope.room_info);
 				})
+			 })
 			})
-
-			})
-			//$scope.display_roomPick();
-			// var competitions = Competitions.botOlympics();
-			// competitions.$loaded().then(function(data) {
-			// $scope.competition = data;
+			//console.log($rootScope.room_info);
+			
 		}
-		$scope.roomPick={roomId:"",dormId:""};
+		//$scope.roomPick={roomId:"",dormId:""};
 
-		$scope.changeRooms = function(){
-			console.log($scope.roomPick.dormId);
+		$scope.verification = function(){
+			Verification.write($rootScope.members_in_team,$rootScope.room_info)
+			
+			$location.path('/submitRoomChoices');
+		}
+
+		$scope.changeRooms = function(person){
+			//console.log(person.name);
+			//console.log($rootScope.room_info);
 			//console.log(picked);
-			$scope.dorm = $scope.roomPick.dormId;
-			console.log("picked", $scope.roomPick.dormId);
-			$scope.rooms = $rootScope.dormRooms[$scope.roomPick.dormId]
+			var who = person.name;
+			//console.log(who);
+
+			$scope.Person = $rootScope.room_info[who];
+			$scope.Person_dorm = $scope.Person.dorm;
+			//console.log($scope.Person_dorm)
+			console.log("picked", $scope.Person_dorm);
+			$scope.rooms = $rootScope.dormRooms[$scope.Person_dorm]
 			console.log($scope.rooms);
+		}
+
+		$scope.showRoomInfo = function(){
+			console.log($rootScope.room_info);
 		}
 
 		$scope.init2 = function(data){
 			$rootScope.dormRooms = data;
 			$rootScope.dorms = Object.keys($rootScope.dormRooms)
-			console.log($rootScope.dorms);
-			console.log($rootScope.dormRooms)
+			//console.log($rootScope.dorms);
+			//console.log($rootScope.dormRooms)
 		}
 
 
@@ -284,7 +208,7 @@ angular.module('RoomDraw.controllers')
 		$scope.time = function(){
 			var time = new Date();
 			$rootScope.time = time;
-			console.log(time.getHours())
+			//console.log(time.getHours())
 ;		}
 		$scope.time();
 		
@@ -312,15 +236,19 @@ angular.module('RoomDraw.controllers')
 				$scope.mem_bers.push({name: i.name, classyear: i.classyear})
 			})
 			$scope.final_luv = $scope.score/$scope.teamLength
-			console.log($scope.final_luv);
+			//console.log($scope.final_luv);
 			$scope.EvaluatedTeam.members = $scope.mem_bers
 			$scope.EvaluatedTeam.score = $scope.final_luv;
-			console.log($scope.EvaluatedTeam);
+			//console.log($scope.EvaluatedTeam);
 			$scope.addTeam()
 		}
 		$scope.getRooms = function(){
-			var url = '2015/getRooms';
+			var url = '/2015/getRooms';
 			Requests.getRooms(url , $scope.init2);
+		}
+		$scope.writeRooms = function(){
+			var url = '/2015/writeRooms';
+			Requests.writeRooms(url);
 		}
 
 		$scope.addTeam = function() {
@@ -388,7 +316,7 @@ angular.module('RoomDraw.controllers')
 	}
 ]);
 
-},{"lodash":12}],4:[function(require,module,exports){
+},{"lodash":13}],4:[function(require,module,exports){
 angular.module('RoomDraw.services')
   .factory('Authentication', ['$timeout', '$cookies', '$http', '$rootScope', 'Refs', '$location',
     function($timeout, $cookies, $http, $rootScope, Refs,$location) {
@@ -516,7 +444,7 @@ angular.module('RoomDraw.services')
   ]);
 
 
-},{"lodash":12}],7:[function(require,module,exports){
+},{"lodash":13}],7:[function(require,module,exports){
 angular.module('RoomDraw.services')
   .factory('DrawYear', ['$cookies', '$firebaseObject', 'Refs',
     function($cookies, $firebaseObject, Refs) {  
@@ -558,7 +486,26 @@ angular.module('RoomDraw.services')
           });
         },
 
+
+        writeRooms: function(url){
+          console.log(url,"http requests")
+          $http.get(url)
+          .success(function(data){
+            if(data.error) {
+              Materialize.toast('ERROR: Couldnt write rooms' , 5000, 'red darken-3');
+              return data.error;
+            }
+            console.log(data);
+            //callback(data)
+          })
+          .error(function(err){
+            Materialize.toast('ERROR: Couldnt try to write rooms' , 5000, 'red darken-3');
+            return err;
+          });
+        },
+
         getRooms: function(url, callback){
+          console.log(url,"http requests")
           $http.get(url)
           .success(function(data){
             if(data.error) {
@@ -727,6 +674,29 @@ angular.module('RoomDraw.services')
   ]);
 
 },{}],12:[function(require,module,exports){
+angular.module('RoomDraw.services')
+  .factory('Verification', ['$cookies', '$firebaseObject', 'Refs', '$rootScope',
+    function($cookies, $firebaseObject, Refs,$rootScope) {  
+      
+      
+     
+      var write = function(a,b){
+         $rootScope.hiddenMemberInfo = a;
+         $rootScope.hidenRoomInfo = b;
+      };
+      
+      var read = function(){
+        return[$rootScope.hiddenMemberInfo,$rootScope.hidenRoomInfo];
+      };
+
+
+      return {
+        write: write,
+        read : read,
+      };
+    }
+  ]);
+},{}],13:[function(require,module,exports){
 (function (global){
 /**
  * @license

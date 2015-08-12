@@ -4,7 +4,8 @@ var unique_scores=[];
 var year = ""
 var id_to_group = {};///for matching id to group function.
 var stopper = true; //stop he ping-pong between time_allocation and write_to_database function
-var dorm_rooms = {MoPratt:[101,102,103,104],Val:[302,303,304,305]};
+var dorm_rooms = {'Morris Pratt':['101A','101B','102','103','104','201','202A','202B'],
+                  'Valentine':['301A','301B','302','303','304','305A','305B']};
 
 
 module.exports = function(app, config) {
@@ -19,6 +20,8 @@ module.exports = function(app, config) {
 
     });
   };
+
+
   var check_for_team_id = function(data, id){
     team_id_available = false;
     _.forEach(data, function(val, key){
@@ -41,7 +44,11 @@ module.exports = function(app, config) {
 
   ///////////MO functions start
 
-  // Fisher-Yates shuffle algorithm
+
+//write_rooms(dorm_rooms);
+
+
+// Fisher-Yates shuffle algorithm
   var shuffle = function(sourceArray) {
     for (var n = 0; n < sourceArray.length - 1; n++) {
         var k = n + Math.floor(Math.random() * (sourceArray.length - n));
@@ -51,6 +58,29 @@ module.exports = function(app, config) {
         sourceArray[n] = temp;
     }
     return sourceArray;
+  };
+
+  var write_rooms = function(dorm_rooms,year){
+    iterations.child(year).child("Dormitories").set(null,function(error){
+      if(!error){
+        var available_dorms = Object.keys(dorm_rooms);
+         console.log("DORMS DELETED");
+         _.forEach(available_dorms,function(dorm){
+         var dormrooms = dorm_rooms[dorm];
+         console.log(dormrooms);
+         iterations.child(year).child('Dormitories').child(dorm).set({
+            available_rooms:dormrooms
+          }, function(error) {
+          if(!error){
+            console.log(dorm,"DONE--------------------------------");
+          }
+          })
+        })
+      }
+
+
+    })
+    console.log("ALL DORMS WRITTEN")
   }
 
   var sort_groups_by_score =function(data){
@@ -178,12 +208,6 @@ var time_allcoation = function(){
   iterations.child(year).child('shuffled_luv').once('value',function(snap){
     var groups=snap.val();
     console.log(groups);
-  //var x = shuffled_luv_object;
-    //keys = Object.keys(groups);
-    // keys.sort(function(a, b){ //sort keys
-
-    //       return (b-a);
-    //     }
     var day_done=false;
     //var start_time= 20:00;
     //var timeSlots = [2000,2015,2030,2045,2100,2115,2130,2145,2200,2215,2230,2245,2000,2315,2330,2345]
@@ -348,13 +372,25 @@ var match_id_to_name = function(){
 
 
 ///////////MO routes start------------------------------
-  app.route('/:2015/getRooms').get(function(req,res){
+  app.route('/:year/getRooms').get(function(req,res){
     console.log("Trying to get rooms,backend");
-    res.json(dorm_rooms);
+    iterations.child(req.params.year).child('Dormitories').once('value',function(snap){
+      var groups=snap.val();
+      console.log(groups);
+      res.send(groups);
+    })
   });
+
+  app.route('/:year/writeRooms').get(function(req,res){
+    console.log("Trying to write rooms,backend");
+    write_rooms(dorm_rooms,req.params.year);
+    console.log(req.params.year);
+    res.send("Writing Rooms");
+  })
 
 
   app.route('/:year/addTeam').post(function(req, res){
+    
     //console.log(req.body);
     year= req.params.year;
     console.log("add team backend");

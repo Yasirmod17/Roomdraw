@@ -6,4 +6,12 @@ li(ng-class='{active: selected === 2, inactive: !selected}')
     a.teams-link.tooltipped(href='#' ng-click='selected = 2' data-tooltip="All Teams" data-position="right")
         i.mdi-social-people.small--></div><div class="top-nav row"><div class="nav-container"><div class="app-name col s11 m3 l3 valign-wrapper"><h3 class="uppercase valign center-align"> <a href="/" style="color:white;font-size:38px">Room Draw</a></h3></div><!--iframe(src='http://free.timeanddate.com/clock/i4sh6rsp/n125/fn6/fs16/fc9ff/tc000/ftb/bas2/bat1/bacfff/pa8/tt0/tw1/th1/ta1/tb4', frameborder='0', width='217', height='80')--><div class="welcome hide-on-small-only"><a ng-if="currentUser" class="profile-details"><img ng-src="{{currentUser.picture}}"/><span> 
 {{currentUser.name}}<!--a(href='/dashboard') Dashboard--></span></a><a href="/getStarted" class="btn-login"><span>Get Started</span></a><a ng-if="!currentUser" ng-click="login()" class="btn-login"><span>Login</span></a><a ng-if="currentUser" ng-click="logout()" class="btn-login"><span>Logout</span></a></div></div></div><!--video#bgvid.hide-on-med-and-down(autoplay='', loop='', poster='')source(src='media/hackdown.webm', type='video/webm')
-source(src='media/hackdown.mp4', type='video/mp4')-->
+source(src='media/hackdown.mp4', type='video/mp4')--><div class="overlay"><div class="content teams row"><h1>Verify your room choices</h1><div class="row"><div class="col s12"><div class="team col s12 m8 l6"><div class="card team-card trans"><div class="team-list"><ul class="team-member"><li ng-repeat="person in members_in_team" class="collection-item avatar row"><div class="user-profile col s10"><span class="title">Name:{{person}},Dorm :{{room_info[person].dorm}},room:{{room_info[person].room}}</span></div></li></ul><button ng-click="saveRoomChoices()" class="btn purple">Submit</button></div><div class="card-content"><span class="card-title activator grey-text text-darken-4">{{team_name}}<i class="mdi-navigation-more-vert right"></i></span></div><!--.card-revealspan.card-title.grey-text.text-darken-4
+  | {{group.name}}
+  i.mdi-navigation-close.right
+hr
+span.div-text
+  | luv score: {{group.score}}
+hr 
+div.div-text.div-textSize(ng-repeat="member in group.members")
+  | {{member.name}}, {{member.classyear}}--></div></div></div></div></div></div>

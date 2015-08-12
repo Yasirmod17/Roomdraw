@@ -60,6 +60,10 @@ include ../shared/layout
                             i.mdi-action-done.accept
                           a.red-text.text-accent-2(href='#' ng-click="declineMember(member_id)")
                             i.mdi-action-highlight-remove.decline
+                    hr
+                    div.div-textSize
+                      p
+                        |Luv Score: {{value.score}}
                   .card-content
                     span.card-title.activator.grey-text.text-darken-4
                       | {{value.name}}
@@ -75,11 +79,20 @@ include ../shared/layout
                     div.div-text.div-textSize(ng-repeat="person in value.members")
                       | {{person.name}}, {{person.classyear}}
                       div(ng-if='value.show && (currentUser.uid === value.id)')
-                        select.browser-default(ng-model='roomPick.dormId' ng-change='changeRooms()')
+                        select.browser-default(ng-model='room_info[person.name].dorm' ng-change='changeRooms(person)')
                           option(value="",disabled="",selected="") Dorm
                           option(value='{{dorm}}' ng-repeat='dorm in dorms' ) {{dorm}}
-                        select.browser-default(ng-model='roomPick.roomId' )
-                          option(value='{{room}}' ng-repeat='room in rooms') {{room}} 
+                        select.browser-default(ng-model='room_info[person.name].room' ng-change='showRoomInfo()' )
+                          option(value="",disabled="",selected="") Room
+                          option(value='{{room}}' ng-repeat='room in rooms.available_rooms') {{room}} 
+                    div(ng-if='value.show && (currentUser.uid === value.id)')
+                      //a.btn-floating.btn-large.waves-effect.waves-light.purple.modal-trigger.btn.tooltipped(href='#create-team-modal' data-tooltip="Create a Group" data-position="right" data-delay="50")
+                      a.modal-trigger2.btn.tooltipped.purple(ng-click="verification()")
+                          |Submit
+                    div(ng-hide="value.show")
+                      p
+                        | Assigned Time: {{value.time}}
+
                    // .card-action.right-align(ng-if='currentUser')
                       a.waves-effect.waves-light.waves-ripple(href='#' ng-click='joinTeam(team_id)' ng-hide='currentUser.uid === team_id')
                         i.mdi-social-person-add.small
@@ -88,10 +101,12 @@ include ../shared/layout
         a.btn-floating.btn-large.waves-effect.waves-light.purple.modal-trigger.btn.tooltipped(href='#create-team-modal' data-tooltip="Create a Group" data-position="right" data-delay="50")
             i.mdi-content-add
 include modals/create-team
+include modals/verify-roomPick
 
 
 script(type='text/javascript').
   $(function() {
+    $('.modal-trigger2').leanModal();
     $('.modal-trigger').leanModal();
     $('.teams-link').on('click', function() {
       $('.overlay').scrollTo('.content.teams', 800);

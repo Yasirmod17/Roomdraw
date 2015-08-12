@@ -12,10 +12,12 @@ require('./services/http.requests.js');
 require('./services/dashboardServices.js');
 require('./services/drawyear.js');
 require('./services/teamservice.js');
+require('./services/verification.js');
+
 
 // loading controller
 require('./controllers/mainCtrl.js');
-require('./controllers/dashboardCntrl.js')
+require('./controllers/VerificationCntrl.js')
 
 window.RoomDraw = angular.module('RoomDraw', [
 	'ngRoute',
@@ -36,6 +38,10 @@ RoomDraw.config(['$routeProvider','$locationProvider',
 			.when('/getStarted', {
 				templateUrl: 'views/home.html',
 				controller: 'mainCtrl'
+			})
+			.when('/submitRoomChoices', {
+				templateUrl: 'views/roomChoices.html',
+				controller: 'VerificationCntrl'
 			})
 			.otherwise({
 				templateUrl: '404.html'

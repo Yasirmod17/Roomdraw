@@ -1,0 +1,30 @@
+include ../shared/layout
+.overlay
+    .content.teams.row
+        h1 Verify your room choices
+        .row
+            .col.s12
+              .team.col.s12.m8.l6
+                .card.team-card.trans
+                  .team-list
+                    ul.team-member
+                      li.collection-item.avatar.row(ng-repeat='person in members_in_team')
+                        .user-profile.col.s10
+                          span.title
+                           |Name:{{person}},Dorm :{{room_info[person].dorm}},room:{{room_info[person].room}}
+                    button.btn.purple(ng-click='saveRoomChoices()')
+                          |Submit
+                  .card-content
+                    span.card-title.activator.grey-text.text-darken-4
+                      | {{team_name}}
+                      i.mdi-navigation-more-vert.right
+                  //.card-reveal
+                    span.card-title.grey-text.text-darken-4
+                      | {{group.name}}
+                      i.mdi-navigation-close.right
+                    hr
+                    span.div-text
+                      | luv score: {{group.score}}
+                    hr 
+                    div.div-text.div-textSize(ng-repeat="member in group.members")
+                      | {{member.name}}, {{member.classyear}}
