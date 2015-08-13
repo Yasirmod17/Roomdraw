@@ -6,7 +6,7 @@ var id_to_group = {};///for matching id to group function.
 var stopper = true; //stop he ping-pong between time_allocation and write_to_database function
 var dorm_rooms = {'Morris Pratt':['101A','101B','102','103','104','201','202A','202B'],
                   'Valentine':['301A','301B','302','303','304','305A','305B']};
-
+///Read dorm_rooms from a file
 
 module.exports = function(app, config) {
   var root = new Firebase(config.firebase.rootRefUrl);
@@ -412,7 +412,7 @@ var match_id_to_name = function(){
     //console.log(req.params.year);
     iterations.child(req.params.year).child('groups').once('value',function(snap){
       var groups=snap.val();
-      //console.log(req.body.team_id)
+      
 
       check_for_group_id(groups, req.body.team_id);
       //console.log(group_id_available)
