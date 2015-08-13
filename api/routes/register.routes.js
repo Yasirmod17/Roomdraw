@@ -417,7 +417,6 @@ var match_id_to_name = function(){
       check_for_group_id(groups, req.body.team_id);
       //console.log(group_id_available)
       if(group_id_available){
-        //console.log("inside IF")
         res.json({
           error: 'You are already a memeber of a group'
         });
